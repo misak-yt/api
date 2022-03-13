@@ -7,7 +7,15 @@
       <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
     </p>
     <h3>Installed CLI Plugins</h3>
-    <h2>{{ res }}</h2>
+    <div v-for="item in res" :key="item">
+      <img :src=item.img alt="">
+      <h3>{{ item.name }}</h3>
+      <h3>{{ item.address }}</h3>
+      <h3>{{ item.access }}</h3>
+      <h3>{{ item.img }}</h3>
+      <h3>{{ item.genre }}</h3>
+      <h3>{{ item.memo }}</h3>
+    </div>
     <button @click="getdata()">ぼたん</button>
   </div>
 </template>
@@ -21,7 +29,7 @@ export default {
   },
   data(){
     return {
-      res: ''
+      res: []
     }
   },
   methods: {
@@ -29,9 +37,32 @@ export default {
       const baseUrl = '/v1/?'
       const apikey = process.env.VUE_APP_apikey
       const url = baseUrl + 'key=' + apikey + '&'
+      const format = '&format=json'
       let self = this
-      axios.get(url + 'large_area=Z011')
-      .then(data => self.res = data)
+      axios.get(url + 'large_area=Z011' + format)
+      .then(response => {
+        let data = response.data.results.shop
+        data.forEach(data => {
+          let address = data.address
+          let access = data.middle_area.mobile_access
+          let memo = data.budget_memo || ''
+          let genre = data.genre.name
+          let name = data.middle_area.name
+          let img = data.photo.pc.m
+
+          console.log(img);
+          self.res.push({
+            name: name,
+            access: access,
+            genre: genre,
+            address: address,
+            img: img,
+            memo: memo
+          })
+
+        })
+        console.log(data);
+      })
     }
   }
 }
