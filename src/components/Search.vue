@@ -3,6 +3,7 @@
     <div>
       <label for="large">大区分：</label>
       <input type="text" name="large" v-model="large">
+      <button @click="getdata()">ぼたん</button>
     </div>
     <div class="box">
       <Card v-for="item in res" :key="item" 
@@ -14,7 +15,6 @@
       />
       <h3>{{this.areas}}</h3>
     </div>
-    <button @click="getdata()">ぼたん</button>
   </div>
 </template>
 
@@ -33,7 +33,12 @@ export default {
     }
   },
   methods: {
+    init(){
+      this.res = []
+    },
     async getdata(){
+      this.init()
+
       const baseUrl = '/gourmet/v1/?'
       const apikey = process.env.VUE_APP_apikey
       const url = baseUrl + 'key=' + apikey + '&'
