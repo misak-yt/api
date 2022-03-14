@@ -1,9 +1,12 @@
 module.exports = {
 	devServer: {
 		proxy: {
-			'v1': {
-				target: 'http://webservice.recruit.co.jp/hotpepper/gourmet/'
-			}
+			'large_area': {
+				target: 'http://webservice.recruit.co.jp/hotpepper/'
+			},
+			'gourmet': {
+				target: 'http://webservice.recruit.co.jp/hotpepper/'
+			},
 		}
 	}
 }
