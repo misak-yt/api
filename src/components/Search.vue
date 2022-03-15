@@ -7,7 +7,8 @@
       <input type="text" name="middle" v-model="middle">
       <label for="large">小区分：</label>
       <input type="text" name="small" v-model="small">
-      <small>※使わないで</small>
+      <label for="large">どれくらい表示する？</label>
+      <input type="text" name="count" v-model="count">
       <button @click="getdata()">ぼたん</button>
     </div>
     <div class="box">
@@ -51,6 +52,7 @@ export default {
       const baseUrl = '/gourmet/v1/?key='
       const apikey = process.env.VUE_APP_apikey
       const url = baseUrl + apikey 
+      const size = '&count=' + this.count
       const format = '&format=json'
       let self = this
       let area = ''
@@ -67,8 +69,9 @@ export default {
         await this.getSmallArea(this.small)
         area += '&small_area=' + this.areas[2]
       }
-      await axios.get(url + area +  format)
+      await axios.get(url + area + size + format)
       .then(response => {
+        console.log(response);
         let data = response.data.results.shop
         data.forEach(data => {
           let address = data.address
@@ -138,14 +141,12 @@ export default {
         .then(response => {
           let data = response.data.results.small_area
           let res = data.filter(data => {
-            console.log(data.name);
-            console.log(data.name.indexOf(area) !== -1);
             return data.name.indexOf(area) !== -1
           })
           let code_list = ''
           res.forEach(d => code_list += d.code + ',')
           console.log(code_list);
-          self.areas[2] = code_list
+          self.areas[2] = code_list.trimEnd()
         })
     }
   }
