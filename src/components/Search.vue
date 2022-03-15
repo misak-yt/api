@@ -3,6 +3,10 @@
     <div>
       <label for="large">大区分：</label>
       <input type="text" name="large" v-model="large">
+      <label for="large">中区分：</label>
+      <input type="text" name="middle" v-model="middle">
+      <label for="large">小区分：</label>
+      <input type="text" name="small" v-model="small">
       <button @click="getdata()">ぼたん</button>
     </div>
     <div class="box">
@@ -39,13 +43,14 @@ export default {
     async getdata(){
       this.init()
 
-      const baseUrl = '/gourmet/v1/?'
+      const baseUrl = '/gourmet/v1/?key='
       const apikey = process.env.VUE_APP_apikey
-      const url = baseUrl + 'key=' + apikey + '&'
+      const url = baseUrl + apikey + '&'
       const format = '&format=json'
       let self = this
       await this.getLargeArea(this.large)
-      await axios.get(url + 'large_area=' + this.areas[0] + format)
+      //await this.getMiddleArea(this.middle)
+      await axios.get(url + 'large_area=' + this.areas[0] +  format)
       .then(response => {
         let data = response.data.results.shop
         console.log(data);
@@ -71,9 +76,9 @@ export default {
       })
     },
     async getLargeArea(area){
-      const baseUrl = '/large_area/v1/?'
+      const baseUrl = '/large_area/v1/?key='
       const apikey = process.env.VUE_APP_apikey
-      const url = baseUrl + 'key=' + apikey + '&'
+      const url = baseUrl + apikey + '&'
       const format = 'format=json'
       let self = this
 
@@ -86,6 +91,25 @@ export default {
             return data.name === area
           })
           self.areas[0] = res.code
+        })
+    },
+    async getMiddleArea(area){
+      const baseUrl = '/middle_area/v1/?key='
+      const apikey = process.env.VUE_APP_apikey
+      const url = baseUrl + apikey + '&'
+      const format = 'format=json'
+      let self = this
+
+      this.areas[1] = null
+      console.log(area);
+      await axios.get(url + format)
+        .then(response => {
+          let data = response.data.results.middle_area
+          let res = data.find(data => {
+            console.log(data.name);
+            return data.name.inclueds(area)
+          })
+          self.areas[1] = res.code
         })
     }
   }
