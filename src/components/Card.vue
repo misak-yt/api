@@ -17,7 +17,6 @@ export default {
 		address: String,
 		access: String,
 		genre: String,
-		memo: String
 	}
 }
 </script>

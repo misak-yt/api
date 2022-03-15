@@ -7,6 +7,7 @@
       <input type="text" name="middle" v-model="middle">
       <label for="large">小区分：</label>
       <input type="text" name="small" v-model="small">
+      <small>※使わないで</small>
       <button @click="getdata()">ぼたん</button>
     </div>
     <div class="box">
@@ -43,17 +44,32 @@ export default {
     async getdata(){
       this.init()
 
+      if ((this.large === undefined|| this.large === '')&& (this.middle === undefined|| this.middle === '')&& (this.small === undefined||this.small === ''))  {
+        alert("大区分、中区分いずれか入力してください")
+      }
+      console.log(`large:${this.large}, middle:${this.middle}, small:${this.small}`);
       const baseUrl = '/gourmet/v1/?key='
       const apikey = process.env.VUE_APP_apikey
-      const url = baseUrl + apikey + '&'
+      const url = baseUrl + apikey 
       const format = '&format=json'
       let self = this
-      await this.getLargeArea(this.large)
-      //await this.getMiddleArea(this.middle)
-      await axios.get(url + 'large_area=' + this.areas[0] +  format)
+      let area = ''
+
+      if (this.large !== undefined&& this.large !== '') {
+        await this.getLargeArea(this.large)
+        area += '&large_area=' + this.areas[0]
+      }
+      if (this.middle !== undefined&& this.middle !== '') {
+        await this.getMiddleArea(this.middle)
+        area += '&middle_area=' + this.areas[1]
+      }
+      if (this.small !== undefined&& this.small !== '') {
+        await this.getSmallArea(this.small)
+        area += '&small_area=' + this.areas[2]
+      }
+      await axios.get(url + area +  format)
       .then(response => {
         let data = response.data.results.shop
-        console.log(data);
         data.forEach(data => {
           let address = data.address
           let access = data.middle_area.mobile_access
@@ -62,7 +78,6 @@ export default {
           let name = data.name
           let img = data.photo.pc.m
 
-          console.log(img);
           self.res.push({
             name: name,
             access: access,
@@ -83,7 +98,6 @@ export default {
       let self = this
 
       this.areas[0] = null
-      console.log(area);
       await axios.get(url + format)
         .then(response => {
           let data = response.data.results.large_area
@@ -106,10 +120,32 @@ export default {
         .then(response => {
           let data = response.data.results.middle_area
           let res = data.find(data => {
-            console.log(data.name);
-            return data.name.inclueds(area)
+            return data.name.indexOf(area) !== -1
           })
           self.areas[1] = res.code
+        })
+    },
+    async getSmallArea(area){
+      const baseUrl = '/small_area/v1/?key='
+      const apikey = process.env.VUE_APP_apikey
+      const url = baseUrl + apikey + '&'
+      const format = 'format=json'
+      let self = this
+
+      this.areas[2] = null
+      console.log(area);
+      await axios.get(url + format)
+        .then(response => {
+          let data = response.data.results.small_area
+          let res = data.filter(data => {
+            console.log(data.name);
+            console.log(data.name.indexOf(area) !== -1);
+            return data.name.indexOf(area) !== -1
+          })
+          let code_list = ''
+          res.forEach(d => code_list += d.code + ',')
+          console.log(code_list);
+          self.areas[2] = code_list
         })
     }
   }
