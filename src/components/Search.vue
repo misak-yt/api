@@ -1,14 +1,18 @@
 <template>
   <div class="wrap">
     <div>
-      <label for="large">大区分：</label>
-      <input type="text" name="large" v-model="large">
-      <label for="large">中区分：</label>
-      <input type="text" name="middle" v-model="middle">
-      <label for="large">小区分：</label>
-      <input type="text" name="small" v-model="small">
-      <label for="large">どれくらい表示する？</label>
-      <input type="text" name="count" v-model="count">
+      <div>
+        <label for="large">大区分：</label>
+        <input type="text" name="large" v-model="large">
+        <label for="large">中区分：</label>
+        <input type="text" name="middle" v-model="middle">
+        <label for="large">小区分：</label>
+        <input type="text" name="small" v-model="small">
+      </div>
+      <div>
+        <label for="large">どれくらい表示する？</label>
+        <input type="text" name="count" v-model="count">
+      </div>
       <button @click="getdata()">ぼたん</button>
     </div>
     <div class="box">
@@ -18,6 +22,7 @@
         :address="item.address"
         :genre="item.genre"
         :memo="item.memo"
+        :href="item.url"
       />
       <h3>{{this.areas}}</h3>
     </div>
@@ -46,7 +51,7 @@ export default {
       this.init()
 
       if ((this.large === undefined|| this.large === '')&& (this.middle === undefined|| this.middle === '')&& (this.small === undefined||this.small === ''))  {
-        alert("大区分、中区分いずれか入力してください")
+        alert("大区分、中区分、小区分いずれか入力してください")
       }
       console.log(`large:${this.large}, middle:${this.middle}, small:${this.small}`);
       const baseUrl = '/gourmet/v1/?key='
@@ -80,6 +85,7 @@ export default {
           let genre = data.genre.name
           let name = data.name
           let img = data.photo.pc.m
+          let url = data.urls.pc
 
           self.res.push({
             name: name,
@@ -87,7 +93,8 @@ export default {
             genre: genre,
             address: address,
             img: img,
-            memo: memo
+            memo: memo,
+            url: url
           })
 
         })

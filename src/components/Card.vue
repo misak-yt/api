@@ -17,6 +17,7 @@ export default {
 		address: String,
 		access: String,
 		genre: String,
+		url: String
 	}
 }
 </script>
